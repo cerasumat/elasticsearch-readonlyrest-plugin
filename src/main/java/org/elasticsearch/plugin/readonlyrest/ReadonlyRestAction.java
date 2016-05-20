@@ -34,6 +34,13 @@ public class ReadonlyRestAction extends BaseRestHandler {
 
       @Override
       public void process(RestRequest request, RestChannel channel, RestFilterChain filterChain) {
+        // Used to change login in HTTP Basic Auth
+        if("logout".equals(request.path())){
+          BytesRestResponse resp = new BytesRestResponse(RestStatus.UNAUTHORIZED, "");
+          logger.debug("Logging out: will send a login prompt header...");
+          resp.addHeader("WWW-Authenticate", "Basic");
+        }
+
         request.putInContext("request", request);
         request.putInContext("channel", channel);
         filterChain.continueProcessing(request, channel);
@@ -43,6 +50,7 @@ public class ReadonlyRestAction extends BaseRestHandler {
 
   @Override
   protected void handleRequest(RestRequest restRequest, RestChannel restChannel, Client client) throws Exception {
+    logger.debug("request received: " + restRequest);
     // We do everything in the constructor
   }
 
